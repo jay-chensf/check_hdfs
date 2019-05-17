@@ -1,6 +1,5 @@
 import sys
 
-
 class CheckhdfsFile(object):
     def __init__(self,cfg_file):
         self.cfg_file = cfg_file
