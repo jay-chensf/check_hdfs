@@ -1,8 +1,12 @@
 import sys
+import datetime
+from tableInfo import TableInfo
 
 class CheckhdfsFile(object):
     def __init__(self,cfg_file):
         self.cfg_file = cfg_file
+        self.tableInfos = []
+        self.parse_cfg_file()
 
     def parse_cfg_file(self):
         try:
@@ -23,19 +27,28 @@ class CheckhdfsFile(object):
                     info_list = info.split('\t')
                     table_info_lists = []
                     for i in range(len(header_list)):
-                        table_info = {header_list[i]:info_list[i]}
-                        table_info_lists.append(table_info)
+                        if header_list[i] == 'table':
+                            name = info_list[i]
+                        elif header_list[i] == 'path':
+                            path = info_list[i]
+                        elif header_list[i] == 'cycle':
+                            cycle = info_list[i]
+                        elif header_list[i] == 'check_delay':
+                            check_delay = info_list[i]
+                        elif header_list[i] == 'check_time':
+                            check_time = info_list[i]
+
+                    tableInfo = TableInfo(name,path,cycle,check_delay,check_time)
+                    self.tableInfos.append(tableInfo)
+
                         #print table_info
                     self.table_infos.append(table_info_lists)
                 line_num += 1
-
-
                 #print line,
         except IOError:
             print self.cfg_file + ",file not found!"
 
-
 if __name__ == '__main__':
-    chf = CheckhdfsFile("D:/shell_script/table.cfg")
-    chf.parse_cfg_file()
-    print chf.table_infos
+    chf = CheckhdfsFile("table.cfg")
+    #chf.parse_cfg_file()
+    print chf.tableInfos
