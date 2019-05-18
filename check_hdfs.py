@@ -1,6 +1,7 @@
 import sys
 import datetime
 from tableInfo import TableInfo
+#from dateutil.relativedelta import relativedelta
 
 class CheckhdfsFile(object):
     def __init__(self,cfg_file):
@@ -12,7 +13,6 @@ class CheckhdfsFile(object):
         try:
             fh = open(self.cfg_file,'r')
             line_num = 0
-            self.table_infos = []
 
             for line in fh:
                 if line_num == 0:
@@ -41,14 +41,37 @@ class CheckhdfsFile(object):
                     tableInfo = TableInfo(name,path,cycle,check_delay,check_time)
                     self.tableInfos.append(tableInfo)
 
-                        #print table_info
-                    self.table_infos.append(table_info_lists)
                 line_num += 1
                 #print line,
         except IOError:
             print self.cfg_file + ",file not found!"
 
+    def AddMonths(self,d, x):
+        newmonth = (((d.month - 1) + x) % 12) + 1
+        newyear = d.year + (((d.month - 1) + x) / 12)
+        return datetime.datetime(newyear, newmonth, d.day,d.hour,d.minute,d.second,d.microsecond)
+
+    def getHDFSPath(self):
+        for ti in self.tableInfos:
+            print(ti.name + "," +  ti.path +  "," +  ti.cycle +  "," +  ti.check_delay +  "," +  ti.check_time)
+            if(ti.cycle == 'MI'):
+                print (datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
+                print (datetime.datetime.now() + datetime.timedelta(minutes = -int(ti.check_delay))).strftime("%Y%m%d%H%M%S")
+            elif (ti.cycle == 'H'):
+                print (datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
+                print (datetime.datetime.now() + datetime.timedelta(hours=-int(ti.check_delay))).strftime(
+                    "%Y%m%d%H%M%S")
+            elif (ti.cycle == 'D'):
+                print (datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
+                print (datetime.datetime.now() + datetime.timedelta(days=-int(ti.check_delay))).strftime(
+                    "%Y%m%d%H%M%S")
+            elif (ti.cycle == 'M'):
+                print (datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
+                print (self.AddMonths(datetime.datetime.now(),-int(ti.check_delay)).strftime(
+                    "%Y%m%d%H%M%S"))
+
 if __name__ == '__main__':
     chf = CheckhdfsFile("table.cfg")
     #chf.parse_cfg_file()
-    print chf.tableInfos
+    #print chf.tableInfos
+    chf.getHDFSPath()
