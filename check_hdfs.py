@@ -1,5 +1,6 @@
 #coding=utf-8
 
+import os
 import sys
 import datetime
 from tableInfo import TableInfo
@@ -50,6 +51,8 @@ class CheckhdfsFile(object):
                 #print line,
         except IOError:
             print self.cfg_file + ",file not found!"
+
+        fh.close()
 
     def AddMonths(self,d, x):
         """月份加减函数"""
@@ -122,7 +125,10 @@ if __name__ == '__main__':
     #chf.parse_cfg_file()
     #print chf.tableInfos
     chf.getTableHDFSPath()
+    wfh = open("D:/PythonProject/test_path.txt", 'w')
+    wfh.write(chf.all_hdfspaths)
+    wfh.close()
     #print(chf.all_hdfspaths)
     #执行 hdfs fs du -s 命令获取表数据路径下的数据大小，并将结果保存到文件中
     #将配置表的信息和获取到的表数据路径数据大小信息关联保存
-    chf.getTablePathSizeInfo("D:/PythonProject/table_size.txt")
+    #chf.getTablePathSizeInfo("D:/PythonProject/table_size.txt")
